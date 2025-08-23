@@ -1,0 +1,26 @@
+# MCP DefectDojo Server Configuration
+# This file contains default configuration that can be used across all transport methods:
+# - Embedded (in-process)
+# - Sidecar (subprocess)  
+# - SSE (server-sent events)
+
+# Server configuration - defines the MCP server identity
+server:
+  name: "mcp-defect-dojo-server"
+  version: "v0.1.0"
+  instructions: "MCP server for DefectDojo integration. Provides tools to query vulnerability findings and manage security data."
+  host: "localhost"
+  port: 8000
+  transport: "stdio"  # Default transport method: stdio, http, sse
+
+# DefectDojo API configuration
+defectdojo:
+  base_url: "http://localhost:8080"
+  api_key: ""  # Set your DefectDojo API key here or via environment variable
+  api_version: "v2"
+  request_timeout: "30s"
+
+# Logging configuration
+logging:
+  level: "info"  # debug, info, warn, error
+  format: "text"  # text, json

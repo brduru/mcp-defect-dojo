@@ -97,7 +97,7 @@ func Load() *Config {
 	if val := os.Getenv("DEFECTDOJO_API_VERSION"); val != "" {
 		config.DefectDojo.APIVersion = val
 	}
-	
+
 	// Logging can be overridden for debugging
 	if val := os.Getenv("LOG_LEVEL"); val != "" {
 		config.Logging.Level = val

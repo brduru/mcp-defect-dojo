@@ -49,14 +49,14 @@ func runSidecarExample() error {
 	initRequest := mcp.InitializeRequest{
 		Params: mcp.InitializeParams{
 			ProtocolVersion: "2024-11-05",
-			Capabilities: mcp.ClientCapabilities{},
+			Capabilities:    mcp.ClientCapabilities{},
 			ClientInfo: mcp.Implementation{
 				Name:    "mcp-defectdojo-sidecar-example",
 				Version: "1.0.0",
 			},
 		},
 	}
-	
+
 	_, err = mcpClient.Initialize(ctx, initRequest)
 	if err != nil {
 		log.Printf("  ⚠️ Client initialization error: %v", err)
@@ -107,9 +107,9 @@ func runEmbeddedExample() error {
 
 	// Option 2: Full control with custom DefectDojo settings
 	server, err := mcpserver.NewServerWithSettings(mcpserver.DefectDojoSettings{
-		BaseURL:    "http://localhost:8080",           // Your DefectDojo URL
-		APIKey:     "your-api-key-here",               // Your API key
-		APIVersion: "v2",                              // API version (optional, defaults to v2)
+		BaseURL:    "http://localhost:8080", // Your DefectDojo URL
+		APIKey:     "your-api-key-here",     // Your API key
+		APIVersion: "v2",                    // API version (optional, defaults to v2)
 	})
 	if err != nil {
 		return err
@@ -129,14 +129,14 @@ func runEmbeddedExample() error {
 	initRequest := mcp.InitializeRequest{
 		Params: mcp.InitializeParams{
 			ProtocolVersion: "2024-11-05",
-			Capabilities: mcp.ClientCapabilities{},
+			Capabilities:    mcp.ClientCapabilities{},
 			ClientInfo: mcp.Implementation{
 				Name:    "mcp-defectdojo-example",
 				Version: "1.0.0",
 			},
 		},
 	}
-	
+
 	_, err = mcpClient.Initialize(ctx, initRequest)
 	if err != nil {
 		log.Printf("  ⚠️ Client initialization error: %v", err)
