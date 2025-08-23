@@ -47,7 +47,7 @@ func DefaultConfig() *Config {
 		},
 		Server: ServerConfig{
 			Name:         "mcp-defect-dojo-server",
-			Version:      "0.2.2",
+			Version:      "0.3.0",
 			Instructions: "MCP server for DefectDojo integration. Provides tools to query vulnerability findings and manage security data.",
 			Host:         "localhost",
 			Port:         8000,
