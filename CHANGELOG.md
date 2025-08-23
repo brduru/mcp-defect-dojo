@@ -1,3 +1,10 @@
+## [0.2.2](https://github.com/brduru/mcp-defect-dojo/compare/v0.2.1...v0.2.2) (2025-08-23)
+
+
+### Bug Fixes
+
+* correct release workflow to only update Server.Version field ([7100ac6](https://github.com/brduru/mcp-defect-dojo/commit/7100ac6751aedc77c43b4c4d0916a462efc38747))
+
 ## [0.2.1](https://github.com/brduru/mcp-defect-dojo/compare/v0.2.0...v0.2.1) (2025-08-23)
 
 
