@@ -2,8 +2,11 @@
 
 A modern Go library and MCP (Model Context Protocol) server for DefectDojo integration, built with [mcp-go](https://github.com/mark3labs/mcp-go).
 
-[![Go Version](https://img.shields.io/badge/Go-1.25+-blue.svg)](https://golang.org/)
+[![CI](https://github.com/brduru/mcp-defect-dojo/workflows/CI/badge.svg)](https://github.com/brduru/mcp-defect-dojo/actions/workflows/ci.yml)
+[![Release](https://github.com/brduru/mcp-defect-dojo/workflows/Release/badge.svg)](https://github.com/brduru/mcp-defect-dojo/actions/workflows/release.yml)
+[![Go Version](https://img.shields.io/badge/Go-1.23+-blue.svg)](https://golang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/brduru/mcp-defect-dojo)](https://github.com/brduru/mcp-defect-dojo/releases/latest)
 
 ## 🚀 Overview
 
@@ -20,7 +23,6 @@ This project provides MCP tools for AI agents to interact with DefectDojo vulner
 **🔌 Transport Support:**
 - **📡 Stdio** - For subprocess/sidecar usage (recommended for AI agents)
 - **🔧 In-Process** - For direct Go library integration via `go get`
-- **🌐 SSE** - For web-based clients and HTTP connections
 
 **🏗️ Architecture:**
 - Clean, modular Go architecture
@@ -54,8 +56,16 @@ import (
 )
 
 func main() {
-    // Create MCP server with API key (automatically loads config.yaml for defaults)
+    // Option 1: Simple usage with API key (uses localhost:8080)
     server, err := mcpserver.NewServerWithAPIKey("your-api-key")
+    
+    // Option 2: Full control with custom DefectDojo settings
+    server, err := mcpserver.NewServerWithSettings(mcpserver.DefectDojoSettings{
+        BaseURL:    "https://defectdojo.company.com",
+        APIKey:     "your-api-key",
+        APIVersion: "v2", // optional
+    })
+    
     if err != nil {
         log.Fatalf("Failed to create server: %v", err)
     }
@@ -81,14 +91,33 @@ func main() {
     log.Printf("Health check result: %v", result.Content)
 }
 ```
+
+> **💡 Usage Options:** 
+> - `NewServerWithAPIKey()` - Simple usage with localhost:8080
+> - `NewServerWithSettings()` - Full control over DefectDojo connection
+```
 ```
 
 ### Option 2: As a Standalone Binary (Stdio Transport)
 
 For use with AI agents and external tools:
 
+**Download pre-built binary:**
 ```bash
-# Clone and build
+# Download latest release for your platform
+wget https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-linux-amd64
+chmod +x mcp-defect-dojo-linux-amd64
+
+# Configure environment
+export DEFECTDOJO_URL="https://your-defectdojo.com"
+export DEFECTDOJO_API_KEY="your-api-key"
+
+# Run as MCP server
+./mcp-defect-dojo-linux-amd64
+```
+
+**Or build from source:**
+```bash
 git clone https://github.com/brduru/mcp-defect-dojo.git
 cd mcp-defect-dojo
 make build
@@ -99,10 +128,10 @@ export DEFECTDOJO_API_KEY="your-api-key"
 
 # Run as MCP server
 ./bin/mcp-server
-```
 
-2. Configure your DefectDojo settings:
-```bash
+# Check version
+./bin/mcp-server --version
+```
 # Edit .env file with your DefectDojo instance details
 vim .env
 ```
@@ -114,48 +143,33 @@ echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}' | ./bin
 
 ## ⚙️ Configuration
 
-### YAML Configuration File
+The server uses sensible defaults that work out-of-the-box for most DefectDojo setups. Configuration is done via environment variables for DefectDojo connection settings:
 
-The server uses a centralized `config.yaml` file for all default settings. This ensures consistency across all transport methods (embedded, sidecar, SSE).
+### Environment Variables
 
-**config.yaml structure:**
-```yaml
-# Server configuration - defines the MCP server identity
-server:
-  name: "mcp-defect-dojo-server"
-  version: "v0.1.0"
-  instructions: "MCP server for DefectDojo integration..."
-  host: "localhost"
-  port: 8000
-  transport: "stdio"
+**DefectDojo Connection (configurable):**
+- `DEFECTDOJO_URL` - DefectDojo base URL (default: `http://localhost:8080`)
+- `DEFECTDOJO_API_KEY` - DefectDojo API key for authentication
+- `DEFECTDOJO_API_VERSION` - DefectDojo API version (default: `v2`)
 
-# DefectDojo API configuration
-defectdojo:
-  base_url: "http://localhost:8080"
-  api_key: ""  # Set via environment or parameter
-  api_version: "v2"
-  request_timeout: "30s"
+**Debugging (configurable):**
+- `LOG_LEVEL` - Logging level: `debug`, `info`, `warn`, `error` (default: `info`)
+- `LOG_FORMAT` - Log format: `text`, `json` (default: `text`)
 
-# Logging configuration
-logging:
-  level: "info"
-  format: "text"
-```
+**Server Identity (fixed - cannot be overridden):**
+- **Server Name**: `mcp-defect-dojo-server` 
+- **Server Version**: `v0.1.0`
+- **Instructions**: DefectDojo MCP integration tools
 
-### Configuration Loading Priority
+### Default Configuration
 
-1. **YAML file** - Loaded automatically from common locations
-2. **Environment variables** - Override YAML values
-3. **API key parameter** - For embedded usage (recommended for security)
-
-### Environment Variable Overrides
-
-- `DEFECTDOJO_URL` - Override DefectDojo base URL
-- `DEFECTDOJO_API_KEY` - Override API key
-- `DEFECTDOJO_API_VERSION` - Override API version
-- `MCP_SERVER_NAME` - Override server name
-- `MCP_SERVER_VERSION` - Override server version
-- `LOG_LEVEL` - Override log level
+The server comes with these built-in defaults:
+- **DefectDojo URL**: `http://localhost:8080` 
+- **API Version**: `v2`
+- **Request Timeout**: `30 seconds`
+- **Server Name**: `mcp-defect-dojo-server` (fixed)
+- **Server Version**: `v0.1.0` (fixed)
+- **Log Level**: `info`
 
 ## 🎯 Quick Start
 
@@ -295,7 +309,7 @@ The `examples/` directory contains complete examples showing different usage pat
 
 ### Go Library Example
 ```bash
-# Shows in-process, SSE, and subprocess usage
+# Shows in-process and subprocess usage
 cd examples/go-library && go run main.go
 ```
 
@@ -306,7 +320,7 @@ cd examples/subprocess && go run main.go
 ```
 
 Both examples demonstrate:
-- Different transport mechanisms (stdio, SSE, in-process)
+- Different transport mechanisms (stdio, in-process)
 - Tool calling patterns
 - Configuration management
 - Error handling
@@ -466,6 +480,49 @@ func (s *MCPServer) registerNewTool() {
     mcp.AddTool(s.mcpServer, tool, handler)
 }
 ```
+
+## 🔄 Releases & Versioning
+
+This project uses **semantic versioning** and automated releases via GitHub Actions.
+
+### 📈 Automatic Releases
+
+Use [conventional commits](https://www.conventionalcommits.org/) for automatic version bumping:
+
+```bash
+# Patch release (1.0.0 → 1.0.1)
+git commit -m "fix: resolve authentication timeout issue"
+
+# Minor release (1.0.0 → 1.1.0)
+git commit -m "feat: add new finding filtering capabilities"
+
+# Major release (1.0.0 → 2.0.0)  
+git commit -m "feat: redesign API interface
+
+BREAKING CHANGE: API endpoint structure has changed"
+```
+
+### 📦 Getting Releases
+
+**Go Module:**
+```bash
+go get github.com/brduru/mcp-defect-dojo@latest
+go get github.com/brduru/mcp-defect-dojo@v1.2.3  # specific version
+```
+
+**Pre-built Binaries:**
+- [Latest Release](https://github.com/brduru/mcp-defect-dojo/releases/latest)
+- Linux (amd64, arm64)
+- macOS (Intel, Apple Silicon)  
+- Windows (amd64)
+
+**Build Information:**
+```bash
+./mcp-server --version  # Shows version, commit, build date
+make version           # Shows build variables
+```
+
+For detailed release process, see [RELEASE.md](RELEASE.md).
 
 ## License
 

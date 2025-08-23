@@ -1,0 +1,110 @@
+name: Auto Version
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'chore: bump version')"
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install semantic-release
+        run: |
+          npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
+
+      - name: Create semantic-release config
+        run: |
+          cat > .releaserc.json << 'EOF'
+          {
+            "branches": ["main"],
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator",
+              ["@semantic-release/changelog", {
+                "changelogFile": "CHANGELOG.md"
+              }],
+              ["@semantic-release/git", {
+                "assets": ["CHANGELOG.md", "internal/config/config.go"],
+                "message": "chore: bump version to ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+              }],
+              ["@semantic-release/github", {
+                "assets": []
+              }]
+            ]
+          }
+          EOF
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Custom script to update version in Go code
+          cat > update-version.js << 'EOF'
+          const fs = require('fs');
+          
+          module.exports = {
+            prepare: (pluginConfig, context) => {
+              const { nextRelease } = context;
+              const version = nextRelease.version;
+              
+              // Update version in config.go
+              const configPath = 'internal/config/config.go';
+              let content = fs.readFileSync(configPath, 'utf8');
+              content = content.replace(
+                /Version:\s*"[^"]*"/,
+                `Version:     "${version}"`
+              );
+              fs.writeFileSync(configPath, content);
+              
+              console.log(`Updated version to ${version} in ${configPath}`);
+            }
+          };
+          EOF
+          
+          # Add custom plugin to config
+          cat > .releaserc.json << 'EOF'
+          {
+            "branches": ["main"],
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator",
+              ["@semantic-release/changelog", {
+                "changelogFile": "CHANGELOG.md"
+              }],
+              ["./update-version.js"],
+              ["@semantic-release/git", {
+                "assets": ["CHANGELOG.md", "internal/config/config.go"],
+                "message": "chore: bump version to ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+              }],
+              ["@semantic-release/github", {
+                "assets": []
+              }]
+            ]
+          }
+          EOF
+          
+          # Run semantic-release
+          npx semantic-release
