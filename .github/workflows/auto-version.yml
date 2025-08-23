@@ -107,37 +107,38 @@ jobs:
           }
           EOF
           
-          # Run semantic-release with custom build step
+          # Run semantic-release
           npx semantic-release
           
-          # Get the version that was just released
-          VERSION=$(git describe --tags --abbrev=0)
-          echo "Released version: $VERSION"
+          # Check if a new version was released
+          NEW_VERSION=$(git describe --tags --abbrev=0 HEAD 2>/dev/null || echo "")
+          PREV_VERSION=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
           
-          # Build binaries if a new version was created
-          if [ -n "$VERSION" ] && [ "$VERSION" != "$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo '')" ]; then
-            echo "Building binaries for version $VERSION"
+          if [ -n "$NEW_VERSION" ] && [ "$NEW_VERSION" != "$PREV_VERSION" ]; then
+            echo "New version released: $NEW_VERSION"
             
-            # Create build directory
+            # Build binaries for the new release
+            echo "Building binaries..."
+            
+            # Clean any existing build directory
+            rm -rf build
             mkdir -p build
             
             # Build for multiple platforms
-            VERSION_NO_V=${VERSION#v}
-            GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=${VERSION}" -o build/mcp-defect-dojo-linux-amd64 ./cmd/mcp-server
-            GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=${VERSION}" -o build/mcp-defect-dojo-linux-arm64 ./cmd/mcp-server
-            GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${VERSION}" -o build/mcp-defect-dojo-darwin-amd64 ./cmd/mcp-server
-            GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${VERSION}" -o build/mcp-defect-dojo-darwin-arm64 ./cmd/mcp-server
-            GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=${VERSION}" -o build/mcp-defect-dojo-windows-amd64.exe ./cmd/mcp-server
+            GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=${NEW_VERSION}" -o build/mcp-defect-dojo-linux-amd64 ./cmd/mcp-server
+            GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=${NEW_VERSION}" -o build/mcp-defect-dojo-linux-arm64 ./cmd/mcp-server
+            GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${NEW_VERSION}" -o build/mcp-defect-dojo-darwin-amd64 ./cmd/mcp-server
+            GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${NEW_VERSION}" -o build/mcp-defect-dojo-darwin-arm64 ./cmd/mcp-server
+            GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=${NEW_VERSION}" -o build/mcp-defect-dojo-windows-amd64.exe ./cmd/mcp-server
             
             # Create checksums
-            cd build
-            sha256sum * > checksums.txt
-            cd ..
+            cd build && sha256sum * > checksums.txt && cd ..
             
-            # Update the release with binaries
-            gh release upload "$VERSION" build/* --clobber
+            # Upload binaries to the release created by semantic-release
+            echo "Uploading binaries to release $NEW_VERSION..."
+            gh release upload "$NEW_VERSION" build/* --clobber || echo "Failed to upload binaries, but release was created"
             
-            echo "Binaries uploaded to release $VERSION"
+            echo "Release $NEW_VERSION completed with binaries"
           else
             echo "No new version was released"
           fi
