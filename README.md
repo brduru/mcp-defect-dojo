@@ -3,7 +3,7 @@
 A modern Go library and MCP (Model Context Protocol) server for DefectDojo integration, built with [mcp-go](https://github.com/mark3labs/mcp-go).
 
 [![CI](https://github.com/brduru/mcp-defect-dojo/workflows/CI/badge.svg)](https://github.com/brduru/mcp-defect-dojo/actions/workflows/ci.yml)
-[![Release](https://github.com/brduru/mcp-defect-dojo/workflows/Release/badge.svg)](https://github.com/brduru/mcp-defect-dojo/actions/workflows/release.yml)
+[![Auto Version](https://github.com/brduru/mcp-defect-dojo/workflows/Auto%20Version/badge.svg)](https://github.com/brduru/mcp-defect-dojo/actions/workflows/auto-version.yml)
 [![Go Version](https://img.shields.io/badge/Go-1.23+-blue.svg)](https://golang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Latest Release](https://img.shields.io/github/v/release/brduru/mcp-defect-dojo)](https://github.com/brduru/mcp-defect-dojo/releases/latest)
