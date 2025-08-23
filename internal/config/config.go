@@ -42,7 +42,7 @@ func DefaultConfig() *Config {
 		DefectDojo: DefectDojoConfig{
 			BaseURL:        "http://localhost:8080",
 			APIKey:         "",
-			APIVersion:     "v2",
+			APIVersion:     "0.2.0",
 			RequestTimeout: 30 * time.Second,
 		},
 		Server: ServerConfig{
