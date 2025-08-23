@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/brduru/mcp-defect-dojo/compare/v0.3.0...v0.3.1) (2025-08-23)
+
+
+### Bug Fixes
+
+* correct CI workflow to use only Go 1.25 ([ea2c076](https://github.com/brduru/mcp-defect-dojo/commit/ea2c0769bac1ede0c5bab3639b8afee2c746366d))
+
 # [0.3.0](https://github.com/brduru/mcp-defect-dojo/compare/v0.2.2...v0.3.0) (2025-08-23)
 
 
