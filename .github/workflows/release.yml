@@ -44,8 +44,8 @@ jobs:
           # Remove 'v' prefix for version string
           VERSION_NO_V=${VERSION#v}
           
-          # Update version in config.go
-          sed -i "s/Version:.*\".*\"/Version:     \"${VERSION_NO_V}\"/" internal/config/config.go
+          # Update only Server Version in config.go, not APIVersion
+          sed -i '/Server: ServerConfig{/,/}/ s/Version:.*".*"/Version:      "'"${VERSION_NO_V}"'"/' internal/config/config.go
           
           # Update go.mod if needed
           go mod tidy
