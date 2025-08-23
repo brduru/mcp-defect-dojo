@@ -42,12 +42,12 @@ func DefaultConfig() *Config {
 		DefectDojo: DefectDojoConfig{
 			BaseURL:        "http://localhost:8080",
 			APIKey:         "",
-			APIVersion:     "0.2.0",
+			APIVersion:     "v2",
 			RequestTimeout: 30 * time.Second,
 		},
 		Server: ServerConfig{
 			Name:         "mcp-defect-dojo-server",
-			Version:      "v0.1.0",
+			Version:      "0.2.0",
 			Instructions: "MCP server for DefectDojo integration. Provides tools to query vulnerability findings and manage security data.",
 			Host:         "localhost",
 			Port:         8000,

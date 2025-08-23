@@ -73,9 +73,10 @@ jobs:
               // Update version in config.go
               const configPath = 'internal/config/config.go';
               let content = fs.readFileSync(configPath, 'utf8');
+              // Only replace the Server Version field, not APIVersion
               content = content.replace(
-                /Version:\s*"[^"]*"/,
-                `Version:     "${version}"`
+                /(Server:\s*ServerConfig\s*{[^}]*Version:\s*)"[^"]*"/s,
+                `$1"${version}"`
               );
               fs.writeFileSync(configPath, content);
               
