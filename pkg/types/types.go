@@ -15,16 +15,16 @@ package types
 //		FalseP:      false,
 //	}
 type Finding struct {
-	ID          int    `json:"id"`                   // Unique finding identifier
-	Title       string `json:"title"`               // Finding title/summary
-	Severity    string `json:"severity"`            // Severity level (Critical, High, Medium, Low, Info)
-	Description string `json:"description"`         // Detailed finding description
-	Active      bool   `json:"active"`              // Whether the finding is currently active
-	Verified    bool   `json:"verified"`            // Whether the finding has been verified
-	FalseP      bool   `json:"false_p"`             // Whether marked as false positive
-	Test        int    `json:"test"`                // Associated test ID
-	Created     string `json:"created,omitempty"`   // Creation timestamp (ISO 8601)
-	Modified    string `json:"modified,omitempty"`  // Last modification timestamp (ISO 8601)
+	ID          int    `json:"id"`                 // Unique finding identifier
+	Title       string `json:"title"`              // Finding title/summary
+	Severity    string `json:"severity"`           // Severity level (Critical, High, Medium, Low, Info)
+	Description string `json:"description"`        // Detailed finding description
+	Active      bool   `json:"active"`             // Whether the finding is currently active
+	Verified    bool   `json:"verified"`           // Whether the finding has been verified
+	FalseP      bool   `json:"false_p"`            // Whether marked as false positive
+	Test        int    `json:"test"`               // Associated test ID
+	Created     string `json:"created,omitempty"`  // Creation timestamp (ISO 8601)
+	Modified    string `json:"modified,omitempty"` // Last modification timestamp (ISO 8601)
 }
 
 // FalsePositiveRequest represents a request to mark a finding as false positive.
@@ -38,19 +38,19 @@ type Finding struct {
 //		Notes:          "Confirmed with security team",
 //	}
 type FalsePositiveRequest struct {
-	IsFalsePositive bool   `json:"false_p"`           // Whether to mark as false positive
+	IsFalsePositive bool   `json:"false_p"`                 // Whether to mark as false positive
 	Justification   string `json:"justification,omitempty"` // Reason for marking as false positive
-	Notes           string `json:"notes,omitempty"`   // Additional notes or comments
+	Notes           string `json:"notes,omitempty"`         // Additional notes or comments
 }
 
 // FalsePositiveResponse represents the response from marking a finding as false positive.
 // This structure contains the updated finding information after the false positive operation.
 type FalsePositiveResponse struct {
-	ID            int    `json:"id"`                   // Finding ID that was updated
-	FalseP        bool   `json:"false_p"`              // Updated false positive status
+	ID            int    `json:"id"`                      // Finding ID that was updated
+	FalseP        bool   `json:"false_p"`                 // Updated false positive status
 	Justification string `json:"justification,omitempty"` // Applied justification
-	Notes         string `json:"notes,omitempty"`      // Applied notes
-	Message       string `json:"message,omitempty"`    // Optional response message from API
+	Notes         string `json:"notes,omitempty"`         // Applied notes
+	Message       string `json:"message,omitempty"`       // Optional response message from API
 }
 
 // FindingsResponse represents the paginated API response for findings list queries.
@@ -64,10 +64,10 @@ type FalsePositiveResponse struct {
 //		fmt.Printf("Finding %d: %s\n", finding.ID, finding.Title)
 //	}
 type FindingsResponse struct {
-	Count    int       `json:"count"`     // Total number of findings matching the query
-	Next     *string   `json:"next"`      // URL for next page of results (nil if last page)
-	Previous *string   `json:"previous"`  // URL for previous page of results (nil if first page)
-	Results  []Finding `json:"results"`   // Array of findings for current page
+	Count    int       `json:"count"`    // Total number of findings matching the query
+	Next     *string   `json:"next"`     // URL for next page of results (nil if last page)
+	Previous *string   `json:"previous"` // URL for previous page of results (nil if first page)
+	Results  []Finding `json:"results"`  // Array of findings for current page
 }
 
 // FindingsFilter contains filtering and pagination options for findings queries.
@@ -97,7 +97,7 @@ type FindingsFilter struct {
 // to avoid typos and ensure consistency.
 const (
 	SeverityInfo     = "Info"     // Informational findings (lowest severity)
-	SeverityLow      = "Low"      // Low severity vulnerabilities  
+	SeverityLow      = "Low"      // Low severity vulnerabilities
 	SeverityMedium   = "Medium"   // Medium severity vulnerabilities
 	SeverityHigh     = "High"     // High severity vulnerabilities
 	SeverityCritical = "Critical" // Critical severity vulnerabilities (highest severity)
@@ -140,7 +140,7 @@ func ValidSeverities() []string {
 //	if IsValidSeverity("Critical") {
 //		fmt.Println("Valid severity level")
 //	}
-//	
+//
 //	if !IsValidSeverity("invalid") {
 //		fmt.Println("Invalid severity level")
 //	}

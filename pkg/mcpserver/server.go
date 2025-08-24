@@ -172,7 +172,7 @@ func NewServer(cfg *Config) *Server {
 			},
 		}
 	}
-	
+
 	// Create DefectDojo client
 	ddClient := defectdojo.NewHTTPClient(&config.DefectDojoConfig{
 		BaseURL:        cfg.DefectDojo.BaseURL,

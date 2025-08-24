@@ -237,9 +237,9 @@ func TestNewServerWithSettings(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "empty settings",
+			name:     "empty settings",
 			settings: DefectDojoSettings{},
-			want: true, // Should use defaults
+			want:     true, // Should use defaults
 		},
 	}
 
@@ -256,13 +256,13 @@ func TestNewServerWithSettings(t *testing.T) {
 // Test configuration validation
 func TestConfigValidation(t *testing.T) {
 	tests := []struct {
-		name           string
-		config         *Config
+		name            string
+		config          *Config
 		expectNilServer bool
 	}{
 		{
-			name:           "nil config uses defaults",
-			config:         nil,
+			name:            "nil config uses defaults",
+			config:          nil,
 			expectNilServer: false, // Should create server with defaults
 		},
 		{
@@ -285,7 +285,7 @@ func TestConfigValidation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := NewServer(tt.config)
 			isNil := server == nil
-			
+
 			if isNil != tt.expectNilServer {
 				t.Errorf("NewServer() returned nil = %v, expected nil = %v", isNil, tt.expectNilServer)
 			}
@@ -316,7 +316,7 @@ func BenchmarkNewServer(b *testing.B) {
 
 func BenchmarkNewServerWithAPIKey(b *testing.B) {
 	apiKey := "benchmark-api-key"
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		server, err := NewServerWithAPIKey(apiKey)
@@ -336,7 +336,7 @@ func TestServerTimeoutConfiguration(t *testing.T) {
 	}{
 		{
 			name:    "default timeout",
-			timeout: 0, // Should use default
+			timeout: 0,                // Should use default
 			want:    30 * time.Second, // Assuming this is the default
 		},
 		{
@@ -412,9 +412,9 @@ func TestServerAPIVersions(t *testing.T) {
 
 func TestDefectDojoSettingsValidation(t *testing.T) {
 	tests := []struct {
-		name         string
-		settings     DefectDojoSettings
-		expectedURL  string
+		name        string
+		settings    DefectDojoSettings
+		expectedURL string
 	}{
 		{
 			name: "HTTPS URL",
@@ -506,7 +506,7 @@ func TestServerCreationMethods(t *testing.T) {
 			APIKey:     "settings-test-key",
 			APIVersion: "v2",
 		}
-		
+
 		server, err := NewServerWithSettings(settings)
 		if err != nil {
 			t.Errorf("Failed to create server: %v", err)

@@ -107,8 +107,8 @@ func TestFinding(t *testing.T) {
 // TestFindingsResponse tests the FindingsResponse structure
 func TestFindingsResponse(t *testing.T) {
 	response := FindingsResponse{
-		Count: 2,
-		Next:  stringPtr("https://api.example.com/findings/?offset=20"),
+		Count:    2,
+		Next:     stringPtr("https://api.example.com/findings/?offset=20"),
 		Previous: nil,
 		Results: []Finding{
 			{
@@ -200,15 +200,15 @@ func TestFalsePositiveRequest(t *testing.T) {
 
 			// Verify fields are preserved
 			if unmarshaled.IsFalsePositive != tt.request.IsFalsePositive {
-				t.Errorf("IsFalsePositive mismatch: got %t, want %t", 
+				t.Errorf("IsFalsePositive mismatch: got %t, want %t",
 					unmarshaled.IsFalsePositive, tt.request.IsFalsePositive)
 			}
 			if unmarshaled.Justification != tt.request.Justification {
-				t.Errorf("Justification mismatch: got %q, want %q", 
+				t.Errorf("Justification mismatch: got %q, want %q",
 					unmarshaled.Justification, tt.request.Justification)
 			}
 			if unmarshaled.Notes != tt.request.Notes {
-				t.Errorf("Notes mismatch: got %q, want %q", 
+				t.Errorf("Notes mismatch: got %q, want %q",
 					unmarshaled.Notes, tt.request.Notes)
 			}
 		})
@@ -284,11 +284,11 @@ func TestJSONEdgeCases(t *testing.T) {
 		}
 
 		if unmarshaled.Title != finding.Title {
-			t.Errorf("Title with special chars not preserved: got %q, want %q", 
+			t.Errorf("Title with special chars not preserved: got %q, want %q",
 				unmarshaled.Title, finding.Title)
 		}
 		if unmarshaled.Description != finding.Description {
-			t.Errorf("Description with special chars not preserved: got %q, want %q", 
+			t.Errorf("Description with special chars not preserved: got %q, want %q",
 				unmarshaled.Description, finding.Description)
 		}
 	})
