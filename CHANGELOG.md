@@ -1,3 +1,16 @@
+# [0.4.0](https://github.com/brduru/mcp-defect-dojo/compare/v0.3.1...v0.4.0) (2025-08-24)
+
+
+### Bug Fixes
+
+* NewServer now uses default config when nil is passed ([0de947d](https://github.com/brduru/mcp-defect-dojo/commit/0de947d42ff2ced8eb7ca4f69e725188a7bf5588))
+
+
+### Features
+
+* significantly improve test coverage across all packages ([93ac388](https://github.com/brduru/mcp-defect-dojo/commit/93ac388ca5cb81fbea3974760463a529de6d797d))
+* simplify and improve examples structure ([47524d1](https://github.com/brduru/mcp-defect-dojo/commit/47524d162f86ec6f8a0830afe8a3bf738f7ed1b7))
+
 ## [0.3.1](https://github.com/brduru/mcp-defect-dojo/compare/v0.3.0...v0.3.1) (2025-08-23)
 
 
