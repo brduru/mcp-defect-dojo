@@ -67,7 +67,11 @@ func (c *DefectDojoConfig) GetTimeout() string {
 
 // GetAPIBasePath returns the full API base path
 func (c *DefectDojoConfig) GetAPIBasePath() string {
-	return "/api/" + c.APIVersion
+	version := c.APIVersion
+	if version == "" {
+		version = "v2" // Default to v2
+	}
+	return "/api/" + version
 }
 
 // IsDebugMode checks if debug logging is enabled

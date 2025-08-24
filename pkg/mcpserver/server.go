@@ -1,53 +1,87 @@
-// Package mcpserver provides MCP server integration for DefectDojo
+// Package mcpserver provides Model Context Protocol (MCP) server integration for DefectDojo.
 //
-// This package allows you to integrate DefectDojo with MCP-compatible AI tools
-// using multiple transport methods including in-process and stdio.
+// This package enables AI agents to interact with DefectDojo vulnerability management platform
+// through the Model Context Protocol. It supports multiple transport methods and provides
+// comprehensive tools for vulnerability management workflows.
 //
-// The server provides several MCP tools for interacting with DefectDojo:
-//   - get_defectdojo_findings: Retrieve vulnerability findings with filtering
-//   - get_finding_detail: Get detailed information about a specific finding
-//   - mark_finding_false_positive: Mark findings as false positives
-//   - defectdojo_health_check: Verify DefectDojo connectivity
+// # Overview
 //
-// Example usage with in-process transport:
+// The mcpserver package is the primary public API for integrating DefectDojo with MCP-compatible
+// AI tools. It provides a clean, well-documented interface for both embedded usage and
+// subprocess communication patterns.
 //
-//	import (
-//		"context"
-//		"github.com/mark3labs/mcp-go/client"
-//		"github.com/brduru/mcp-defect-dojo/pkg/mcpserver"
-//	)
+// # Supported MCP Tools
 //
-//	// Simple usage - just API key (uses localhost:8080)
-//	server, err := mcpserver.NewServerWithAPIKey("your-api-key")
+//   - defectdojo_health_check: Verify DefectDojo API connectivity and health status
+//   - get_defectdojo_findings: Retrieve and filter vulnerability findings with advanced options
+//   - get_finding_detail: Get comprehensive details about specific vulnerabilities
+//   - mark_finding_false_positive: Mark findings as false positives with audit trail
 //
-//	// Full control - custom DefectDojo settings
+// # Transport Methods
+//
+// The server supports two primary communication patterns:
+//
+//   - In-Process: Direct function calls for embedded usage within Go applications
+//   - Stdio: Subprocess communication for language-agnostic integration
+//
+// # Quick Start Examples
+//
+// ## Simple Setup with API Key
+//
+//	server, err := mcpserver.NewServerWithAPIKey("your-defectdojo-api-key")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// Create in-process client
+//	client, err := client.NewInProcessClient(server.GetMCPServer())
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+// ## Custom Configuration
+//
 //	server, err := mcpserver.NewServerWithSettings(mcpserver.DefectDojoSettings{
 //		BaseURL:    "https://defectdojo.company.com",
 //		APIKey:     "your-api-key",
 //		APIVersion: "v2",
 //	})
 //
-//	// Use in-process for direct integration
-//	inProcessClient, err := client.NewInProcessClient(server.GetMCPServer())
-//	if err != nil {
-//		// handle error
-//	}
+// ## Full Configuration Control
 //
-//	// Call DefectDojo tools directly
-//	result, err := inProcessClient.CallTool(ctx, mcp.CallToolRequest{
-//		Params: mcp.CallToolParams{
-//			Name: "defectdojo_health_check",
-//			Arguments: map[string]any{},
+//	config := &mcpserver.Config{
+//		DefectDojo: mcpserver.DefectDojoConfig{
+//			BaseURL:        "https://defectdojo.company.com",
+//			APIKey:         "your-api-key",
+//			APIVersion:     "v2",
+//			RequestTimeout: 30 * time.Second,
 //		},
-//	})
+//		Server: mcpserver.ServerConfig{
+//			Name:         "custom-defectdojo-server",
+//			Version:      "1.0.0",
+//			Instructions: "Custom instructions for AI agents",
+//		},
+//	}
+//	server := mcpserver.NewServer(config)
 //
-// Example usage with stdio (subprocess):
+// ## Subprocess Usage
 //
 //	// Start the server as subprocess
 //	stdioClient, err := client.NewStdioMCPClient("./mcp-defect-dojo-server", []string{
 //		"DEFECTDOJO_URL=https://your-defectdojo.com",
 //		"DEFECTDOJO_API_KEY=your-api-key",
 //	})
+//
+// # Error Handling
+//
+// All MCP tools properly propagate errors through the MCP protocol. Connection failures,
+// authentication errors, and API errors are returned as proper Go errors that can be
+// handled by MCP clients.
+//
+// # Thread Safety
+//
+// The server instances are thread-safe and can be used concurrently from multiple goroutines.
+// The underlying HTTP client handles connection pooling and concurrent requests efficiently.
 package mcpserver
 
 import (
@@ -117,6 +151,28 @@ type LoggingConfig struct {
 //   - mark_finding_false_positive: Mark findings as false positives with justification
 //   - defectdojo_health_check: Test DefectDojo API connectivity
 func NewServer(cfg *Config) *Server {
+	// Use default config if nil is provided
+	if cfg == nil {
+		defaultCfg := config.DefaultConfig()
+		cfg = &Config{
+			DefectDojo: DefectDojoConfig{
+				BaseURL:        defaultCfg.DefectDojo.BaseURL,
+				APIKey:         defaultCfg.DefectDojo.APIKey,
+				APIVersion:     defaultCfg.DefectDojo.APIVersion,
+				RequestTimeout: defaultCfg.DefectDojo.RequestTimeout,
+			},
+			Server: ServerConfig{
+				Name:         defaultCfg.Server.Name,
+				Version:      defaultCfg.Server.Version,
+				Instructions: defaultCfg.Server.Instructions,
+			},
+			Logging: LoggingConfig{
+				Level:  defaultCfg.Logging.Level,
+				Format: defaultCfg.Logging.Format,
+			},
+		}
+	}
+	
 	// Create DefectDojo client
 	ddClient := defectdojo.NewHTTPClient(&config.DefectDojoConfig{
 		BaseURL:        cfg.DefectDojo.BaseURL,
@@ -283,11 +339,10 @@ func addDefectDojoTools(s *server.MCPServer, ddClient defectdojo.Client) {
 	)
 	s.AddTool(healthTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		isHealthy, message := ddClient.HealthCheck(ctx)
-		status := "❌ UNHEALTHY"
-		if isHealthy {
-			status = "✅ HEALTHY"
+		if !isHealthy {
+			return nil, fmt.Errorf("DefectDojo Health Check failed: %s", message)
 		}
-		return mcp.NewToolResultText(fmt.Sprintf("DefectDojo Health Check: %s\n\n%s", status, message)), nil
+		return mcp.NewToolResultText(fmt.Sprintf("DefectDojo Health Check: ✅ HEALTHY\n\n%s", message)), nil
 	})
 
 	// Get findings tool
@@ -315,7 +370,7 @@ func addDefectDojoTools(s *server.MCPServer, ddClient defectdojo.Client) {
 		// Call DefectDojo API
 		response, err := ddClient.GetFindings(ctx, filter)
 		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error retrieving findings: %v", err)), nil
+			return nil, fmt.Errorf("error retrieving findings: %w", err)
 		}
 
 		// Format response
@@ -340,12 +395,12 @@ func addDefectDojoTools(s *server.MCPServer, ddClient defectdojo.Client) {
 	s.AddTool(detailTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		findingID, err := request.RequireInt("finding_id")
 		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Invalid finding_id: %v", err)), nil
+			return nil, fmt.Errorf("invalid finding_id: %w", err)
 		}
 
 		finding, err := ddClient.GetFindingDetail(ctx, findingID)
 		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error retrieving finding %d: %v", findingID, err)), nil
+			return nil, fmt.Errorf("error retrieving finding %d: %w", findingID, err)
 		}
 
 		result := fmt.Sprintf("Finding Details (ID: %d):\n\n", finding.ID)
@@ -378,12 +433,12 @@ func addDefectDojoTools(s *server.MCPServer, ddClient defectdojo.Client) {
 	s.AddTool(falsePositiveTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		findingID, err := request.RequireInt("finding_id")
 		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Invalid finding_id: %v", err)), nil
+			return nil, fmt.Errorf("invalid finding_id: %w", err)
 		}
 
 		justification, err := request.RequireString("justification")
 		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Invalid justification: %v", err)), nil
+			return nil, fmt.Errorf("invalid justification: %w", err)
 		}
 
 		notes := request.GetString("notes", "")
@@ -396,7 +451,7 @@ func addDefectDojoTools(s *server.MCPServer, ddClient defectdojo.Client) {
 
 		response, err := ddClient.MarkFalsePositive(ctx, findingID, fpRequest)
 		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error marking finding %d as false positive: %v", findingID, err)), nil
+			return nil, fmt.Errorf("error marking finding %d as false positive: %w", findingID, err)
 		}
 
 		result := fmt.Sprintf("Successfully marked finding %d as false positive:\n\n", response.ID)
