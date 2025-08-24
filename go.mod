@@ -1,6 +1,6 @@
 module github.com/brduru/mcp-defect-dojo
 
-go 1.25.0
+go 1.25
 
 require github.com/mark3labs/mcp-go v0.38.0
 
