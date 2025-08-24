@@ -4,7 +4,6 @@
 
 [![CI](https://github.com/brduru/mcp-defect-dojo/workflows/CI/badge.svg)](https://github.com/brduru/mcp-defect-dojo/action)
 [![Go Version](https://img.shields.io/badge/Go-1.25+-blue.svg)](https://golang.org/)
-[![Go Report Card](https://goreportcard.com/badge/github.com/brduru/mcp-defect-dojo)](https://goreportcard.com/report/github.com/brduru/mcp-defect-dojo)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![GoDoc](https://pkg.go.dev/badge/github.com/brduru/mcp-defect-dojo.svg)](https://pkg.go.dev/github.com/brduru/mcp-defect-dojo)
 
