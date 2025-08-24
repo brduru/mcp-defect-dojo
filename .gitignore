@@ -11,6 +11,7 @@ bin/
 *.out
 coverage.html
 coverage.out
+*.prof
 
 # Environment files
 .env
@@ -38,3 +39,8 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+*.bak
+
+# Documentation build artifacts
+docs/_build/
+docs/.doctrees/
