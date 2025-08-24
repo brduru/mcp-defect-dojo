@@ -2,38 +2,14 @@
 
 🔗 **Connect AI agents to DefectDojo vulnerability management platform**
 
-[![CI](https://github.com/brduru/mcp-defect-dojo/workflows/CI/badge.svg)](https://github.com/brduru/mcp-defect-dojo/actio## 📦 Installation Options
-
-### Pre-built Binaries
-Download ready-to-use binaries for your platform:
-
-| Platform | Download Link |
-|----------|---------------|
-| Linux (x64) | [mcp-defect-dojo-linux-amd64](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-linux-amd64) |
-| Linux (ARM64) | [mcp-defect-dojo-linux-arm64](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-linux-arm64) |
-| macOS (Intel) | [mcp-defect-dojo-darwin-amd64](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-darwin-amd64) |
-| macOS (Apple Silicon) | [mcp-defect-dojo-darwin-arm64](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-darwin-arm64) |
-| Windows (x64) | [mcp-defect-dojo-windows-amd64.exe](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-windows-amd64.exe) |
-
-### Package Managers
-```bash
-# Go Module
-go get github.com/brduru/mcp-defect-dojo/pkg/mcpserver@latest
-
-# Homebrew (macOS/Linux)  
-brew install brduru/tap/mcp-defect-dojo
-
-# Chocolatey (Windows)
-choco install mcp-defect-dojo
-```
-
-### From Sourcei.yml)
+[![CI](https://github.com/brduru/mcp-defect-dojo/workflows/CI/badge.svg)](https://github.com/brduru/mcp-defect-dojo/action)
 [![Go Version](https://img.shields.io/badge/Go-1.25+-blue.svg)](https://golang.org/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/brduru/mcp-defect-dojo)](https://goreportcard.com/report/github.com/brduru/mcp-defect-dojo)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Latest Release](https://img.shields.io/github/v/release/brduru/mcp-defect-dojo)](https://github.com/brduru/mcp-defect-dojo/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/brduru/mcp-defect-dojo/total.svg)](https://github.com/brduru/mcp-defect-dojo/releases)
 [![GitHub stars](https://img.shields.io/github/stars/brduru/mcp-defect-dojo?style=social)](https://github.com/brduru/mcp-defect-dojo/stargazers)
+
 
 **MCP DefectDojo** is a Model Context Protocol (MCP) integration that enables AI agents to interact with DefectDojo vulnerability management platforms. Use it to automate security workflows, analyze vulnerabilities, and manage findings through natural language AI interactions.
 
@@ -279,6 +255,4 @@ We welcome contributions! See our [contributing guide](CONTRIBUTING.md) for deta
 MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
-
-**Made with ❤️ for the security community**  
 *Connect your AI agents to DefectDojo and automate vulnerability management*
