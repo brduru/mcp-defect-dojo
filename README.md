@@ -1,136 +1,105 @@
 # MCP DefectDojo
 
-🔗 **Connect AI agents to DefectDojo vulnerability management platform**
+> 🔗 **Connect AI agents to DefectDojo vulnerability management**
 
 [![CI](https://github.com/brduru/mcp-defect-dojo/workflows/CI/badge.svg)](https://github.com/brduru/mcp-defect-dojo/action)
 [![Go Version](https://img.shields.io/badge/Go-1.25+-blue.svg)](https://golang.org/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/brduru/mcp-defect-dojo)](https://goreportcard.com/report/github.com/brduru/mcp-defect-dojo)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Latest Release](https://img.shields.io/github/v/release/brduru/mcp-defect-dojo)](https://github.com/brduru/mcp-defect-dojo/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/brduru/mcp-defect-dojo/total.svg)](https://github.com/brduru/mcp-defect-dojo/releases)
-[![GitHub stars](https://img.shields.io/github/stars/brduru/mcp-defect-dojo?style=social)](https://github.com/brduru/mcp-defect-dojo/stargazers)
+[![GoDoc](https://pkg.go.dev/badge/github.com/brduru/mcp-defect-dojo.svg)](https://pkg.go.dev/github.com/brduru/mcp-defect-dojo)
 
+A [Model Context Protocol](https://spec.modelcontextprotocol.io/) server that enables AI agents to interact with DefectDojo vulnerability management platforms through natural language.
 
-**MCP DefectDojo** is a Model Context Protocol (MCP) integration that enables AI agents to interact with DefectDojo vulnerability management platforms. Use it to automate security workflows, analyze vulnerabilities, and manage findings through natural language AI interactions.
-
-> 🤖 **Perfect for**: Claude Desktop, VS Code Copilot, custom AI agents, and any MCP-compatible tools
-
-## ✨ What You Can Do
-
-**🔍 Query Vulnerabilities:**
-- "Show me all critical findings from the last week"
-- "Get details about finding #123"
-- "List all unverified vulnerabilities in my project"
-
-**🎯 Manage Findings:**
-- "Mark finding #456 as false positive - it's test data"
-- "Show me all findings for the authentication module"
-- "Check if DefectDojo is accessible"
-
-**� Automate Workflows:**
-- Filter findings by severity, status, or test
-- Bulk analyze vulnerability trends
-- Integrate with CI/CD pipelines
-
-## 🎯 Available Tools
-
-| Tool | Description | Use Case |
-|------|-------------|----------|
-| `defectdojo_health_check` | Verify connectivity | "Is DefectDojo online?" |
-| `get_defectdojo_findings` | Search vulnerabilities | "Show critical findings" |
-| `get_finding_detail` | Get full finding info | "Details for finding #123" |
-| `mark_finding_false_positive` | Mark as false positive | "This is a false alarm" |
+**Compatible with**: Claude Desktop, VS Code Copilot, custom AI agents, and any MCP-compatible tools
 
 ## � Quick Start
 
-### 1. For AI Agents (Claude Desktop, VS Code, etc.)
+### For AI Agents (Recommended)
 
-**Download & Run:**
-```bash
-# Download latest release
-curl -L https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-linux-amd64 -o mcp-defect-dojo
-chmod +x mcp-defect-dojo
+1. **Download the binary**:
+   ```bash
+   # Linux/macOS
+   curl -L https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-linux-amd64 -o mcp-defect-dojo
+   chmod +x mcp-defect-dojo
+   ```
 
-# Set your DefectDojo connection
-export DEFECTDOJO_URL="https://your-defectdojo.com"
-export DEFECTDOJO_API_KEY="your-api-key"
+2. **Configure your AI client**:
 
-# Start MCP server
-./mcp-defect-dojo
-```
+   **Claude Desktop** (`~/.claude/claude_desktop_config.json`):
+   ```json
+   {
+     "mcpServers": {
+       "defectdojo": {
+         "command": "/path/to/mcp-defect-dojo",
+         "env": {
+           "DEFECTDOJO_URL": "https://your-defectdojo.com",
+           "DEFECTDOJO_API_KEY": "your-api-key"
+         }
+       }
+     }
+   }
+   ```
 
-**Claude Desktop Configuration:**
-Add to your `claude_desktop_config.json`:
-```json
-{
-  "mcpServers": {
-    "defectdojo": {
-      "command": "/path/to/mcp-defect-dojo",
-      "env": {
-        "DEFECTDOJO_URL": "https://your-defectdojo.com",
-        "DEFECTDOJO_API_KEY": "your-api-key"
-      }
-    }
-  }
-}
-```
+3. **Start chatting**:
+   ```
+   You: "Check if DefectDojo is working"
+   Claude: ✅ DefectDojo Health Check: HEALTHY
+   
+   You: "Show me all critical vulnerabilities"
+   Claude: Found 5 critical findings...
+   ```
 
-### 2. For Go Applications
+### For Go Applications
 
-**Install Library:**
 ```bash
 go get github.com/brduru/mcp-defect-dojo/pkg/mcpserver
 ```
 
-**Simple Integration:**
 ```go
+package main
+
 import "github.com/brduru/mcp-defect-dojo/pkg/mcpserver"
 
-// Quick setup with API key
-server, err := mcpserver.NewServerWithAPIKey("your-api-key")
-
-// Or full configuration
-server, err := mcpserver.NewServerWithSettings(mcpserver.DefectDojoSettings{
-    BaseURL: "https://defectdojo.company.com",
-    APIKey:  "your-api-key",
-})
-
-// Use with in-process client
-client, err := client.NewInProcessClient(server.GetMCPServer())
+func main() {
+    // Quick setup with API key
+    server, err := mcpserver.NewServerWithAPIKey("your-api-key")
+    if err != nil {
+        panic(err)
+    }
+    
+    // Run the server
+    if err := server.Run(context.Background()); err != nil {
+        panic(err)
+    }
+}
 ```
 
-## 💬 Example Conversations
+## 🛠️ Available Tools
 
-**With Claude Desktop:**
+| Tool | Description | Example |
+|------|-------------|---------|
+| `defectdojo_health_check` | Verify connectivity | *"Is DefectDojo online?"* |
+| `get_defectdojo_findings` | Search vulnerabilities | *"Show me all critical findings"* |
+| `get_finding_detail` | Get finding details | *"Get details for finding #123"* |
+| `mark_finding_false_positive` | Mark false positives | *"Mark finding #456 as false positive"* |
+
+### Example Conversations
+
 ```
-You: "Check if DefectDojo is working"
-Claude: I'll check the DefectDojo health status for you.
-✅ DefectDojo Health Check: HEALTHY
-Connection successful to https://your-defectdojo.com
-API v2 is responsive and accessible.
+🧑: "Check if DefectDojo is working"
+🤖: ✅ DefectDojo Health Check: HEALTHY
+   Connection successful to https://your-defectdojo.com
+   API v2 is responsive and accessible.
 
-You: "Show me the most critical vulnerabilities"
-Claude: I'll retrieve the critical findings from DefectDojo.
-
-Found 15 findings (showing 10):
-
-1. [Critical] SQL Injection in Authentication Module (ID: 456)
-   Active: true, Verified: true, False Positive: false
-   Description: SQL injection vulnerability in login endpoint
-
-2. [Critical] Remote Code Execution via File Upload (ID: 789)
-   Active: true, Verified: false, False Positive: false
-   Description: Unrestricted file upload allows RCE
+🧑: "Show me the most critical vulnerabilities"  
+🤖: Found 3 critical findings:
+   
+   1. [Critical] SQL Injection in Authentication (ID: 456)
+      Status: Active, Verified: true
+      
+   2. [Critical] Remote Code Execution via Upload (ID: 789)  
+      Status: Active, Verified: false
 ```
-
-**With MCP-compatible Tools:**
-```bash
-# Using any MCP client via stdio
-echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "defectdojo_health_check", "arguments": {}}}' | ./mcp-defect-dojo
-
-# List available tools
-echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}' | ./mcp-defect-dojo
-```
-
 ## ⚙️ Configuration
 
 ### Environment Variables
@@ -140,82 +109,29 @@ echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}' | ./mcp
 | `DEFECTDOJO_URL` | DefectDojo base URL | `http://localhost:8080` | ✅ |
 | `DEFECTDOJO_API_KEY` | API authentication key | - | ✅ |
 | `DEFECTDOJO_API_VERSION` | API version | `v2` | ❌ |
-| `LOG_LEVEL` | Logging level | `info` | ❌ |
 
-### AI Agent Setup
+### Configuration Methods
 
-**Claude Desktop** (`~/.claude/claude_desktop_config.json`):
-```json
-{
-  "mcpServers": {
-    "defectdojo": {
-      "command": "/path/to/mcp-defect-dojo",
-      "env": {
-        "DEFECTDOJO_URL": "https://your-defectdojo.com",
-        "DEFECTDOJO_API_KEY": "your-api-key"
-      }
-    }
-  }
-}
+```go
+// Method 1: Environment variables (recommended for AI agents)
+server, err := mcpserver.NewServer()
+
+// Method 2: Direct API key
+server, err := mcpserver.NewServerWithAPIKey("your-api-key")
+
+// Method 3: Full configuration
+server, err := mcpserver.NewServerWithSettings(mcpserver.DefectDojoSettings{
+    BaseURL:    "https://defectdojo.company.com",
+    APIKey:     "your-api-key",
+    APIVersion: "v2",
+})
 ```
-
-**VS Code MCP Extension**:
-```json
-{
-  "mcp.servers": [
-    {
-      "name": "defectdojo",
-      "command": "/path/to/mcp-defect-dojo",
-      "env": {
-        "DEFECTDOJO_URL": "https://your-defectdojo.com",
-        "DEFECTDOJO_API_KEY": "your-api-key"
-      }
-    }
-  ]
-}
-```
-
-## 🛠️ Tool Reference
-
-### `defectdojo_health_check`
-**Purpose:** Verify DefectDojo connectivity and status  
-**Parameters:** None  
-**Example:** "Is DefectDojo online?"
-
-### `get_defectdojo_findings`
-**Purpose:** Search and filter vulnerability findings  
-**Parameters:**
-- `limit` (number): Max results to return (default: 10)
-- `offset` (number): Pagination offset (default: 0)
-- `active_only` (boolean): Show only active findings (default: true)
-- `severity` (string): Filter by severity (Critical, High, Medium, Low, Info)
-- `test` (number): Filter by specific test ID
-
-**Example:** "Show me all critical findings"
-
-### `get_finding_detail`
-**Purpose:** Get comprehensive information about a specific finding  
-**Parameters:**
-- `finding_id` (number): The ID of the finding to retrieve
-
-**Example:** "Get details for finding #123"
-
-### `mark_finding_false_positive`
-**Purpose:** Mark a finding as false positive with justification  
-**Parameters:**
-- `finding_id` (number): The ID of the finding to mark
-- `justification` (string): Reason for marking as false positive
-- `notes` (string, optional): Additional notes
-
-**Example:** "Mark finding #456 as false positive - it's test data"
-
-## � Installation Options
+## 📦 Installation
 
 ### Pre-built Binaries
-Download ready-to-use binaries for your platform:
 
-| Platform | Download Link |
-|----------|---------------|
+| Platform | Download |
+|----------|----------|
 | Linux (x64) | [mcp-defect-dojo-linux-amd64](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-linux-amd64) |
 | Linux (ARM64) | [mcp-defect-dojo-linux-arm64](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-linux-arm64) |
 | macOS (Intel) | [mcp-defect-dojo-darwin-amd64](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-darwin-amd64) |
@@ -223,6 +139,7 @@ Download ready-to-use binaries for your platform:
 | Windows (x64) | [mcp-defect-dojo-windows-amd64.exe](https://github.com/brduru/mcp-defect-dojo/releases/latest/download/mcp-defect-dojo-windows-amd64.exe) |
 
 ### From Source
+
 ```bash
 git clone https://github.com/brduru/mcp-defect-dojo.git
 cd mcp-defect-dojo
@@ -230,28 +147,67 @@ make build
 ```
 
 ### Go Module
+
 ```bash
 go get github.com/brduru/mcp-defect-dojo/pkg/mcpserver@latest
 ```
 
-## 🤝 Support & Community
+## 🔧 Development
 
-### Documentation
-- [Model Context Protocol](https://spec.modelcontextprotocol.io/) - Learn about MCP
-- [DefectDojo API](https://demo.defectdojo.org/api/v2/) - DefectDojo API documentation
-- [Examples](examples/) - Complete usage examples
+### Testing
 
-### Issues & Questions
-- 🐛 [Report bugs](https://github.com/brduru/mcp-defect-dojo/issues/new?template=bug_report.md)
-- 💡 [Request features](https://github.com/brduru/mcp-defect-dojo/issues/new?template=feature_request.md)
-- ❓ [Ask questions](https://github.com/brduru/mcp-defect-dojo/discussions)
+```bash
+# Run all tests
+make test
 
-### Contributing
-We welcome contributions! See our [contributing guide](CONTRIBUTING.md) for details.
+# Run with coverage
+make test-coverage
 
-## � License
+# Run specific package
+go test ./pkg/mcpserver -v
+```
+
+**Current Test Coverage:**
+- `pkg/mcpserver`: 32.9%
+- `pkg/types`: 100%
+- `internal/config`: 80%
+- `internal/defectdojo`: 86.9%
+
+### Building
+
+```bash
+# Build for current platform
+make build
+
+# Build for all platforms
+make build-all
+
+# Run locally
+make run
+```
+
+## 📚 Documentation
+
+- **[GoDoc API Reference](https://pkg.go.dev/github.com/brduru/mcp-defect-dojo)** - Complete API documentation
+- **[Examples](examples/)** - Usage examples and integration patterns
+- **[Model Context Protocol](https://spec.modelcontextprotocol.io/)** - Learn about MCP
+- **[DefectDojo API](https://demo.defectdojo.org/api/v2/)** - DefectDojo API documentation
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [contributing guide](CONTRIBUTING.md) for details.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Run tests (`make test`)
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+## 📝 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
-*Connect your AI agents to DefectDojo and automate vulnerability management*
+
+**Connect your AI agents to DefectDojo and automate vulnerability management** 🚀
