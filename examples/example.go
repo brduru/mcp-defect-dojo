@@ -1,3 +1,5 @@
+// Package main demonstrates comprehensive usage of the MCP DefectDojo library.
+// This example shows both sidecar (subprocess) and embedded (in-process) server usage patterns.
 package main
 
 import (
@@ -11,8 +13,8 @@ import (
 )
 
 func main() {
-	log.Printf("🚀 MCP DefectDojo Go Library Example")
-	log.Printf("====================================")
+	log.Printf("🚀 MCP DefectDojo Complete Example")
+	log.Printf("=================================")
 
 	// Example 1: Using as a sidecar (subprocess)
 	log.Printf("\n📡 Example 1: Sidecar Usage (Subprocess)")
@@ -34,10 +36,14 @@ func runSidecarExample() error {
 	log.Printf("  🔄 Starting MCP server as subprocess...")
 
 	// Create MCP client for stdio transport (sidecar)
-	mcpClient, err := client.NewStdioMCPClient("../../bin/mcp-server", []string{
-		"DEFECTDOJO_URL=http://localhost:8080",
-		"DEFECTDOJO_API_KEY=your-api-key-here", // Replace with your actual API key
-	})
+	// NOTE: Run this example from the examples/ directory for relative path to work
+	mcpClient, err := client.NewStdioMCPClient(
+		"../bin/mcp-server",
+		[]string{
+			"DEFECTDOJO_URL=http://localhost:8080",
+			"DEFECTDOJO_API_KEY=your-api-key-here", // Replace with your actual API key
+		},
+	)
 	if err != nil {
 		return err
 	}
